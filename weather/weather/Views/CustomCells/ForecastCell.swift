@@ -59,11 +59,11 @@ final class ForecastCell: UITableViewCell {
         }
     }
     
-    func configure(with viewModel: ForecastResponse){
-        dayLabel.text = viewModel.forecastday[0].date
-        tempLabel.text = String(viewModel.forecastday[0].hour[0].tempC)
+    func configure(with viewModel: Forecast){
+        dayLabel.text = "viewModel.current"
+        tempLabel.text = "String(viewModel.forecastday[0].hour[0].tempC)"
         
-        if let iconURL = URL(string: "https: \(viewModel.forecastday[0].hour[0].condition.icon)") {
+        if let iconURL = URL(string: "https://cdn.weatherapi.com/weather/64x64/day/302.png") {
             URLSession.shared.dataTask(with: iconURL) { data, _, error in
                 if let data = data , let image = UIImage(data: data) {
                     DispatchQueue.main.async {

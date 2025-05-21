@@ -65,4 +65,19 @@ final class CurrentDayView: UIView {
             make.width.height.equalTo(60)
         }
     }
+    
+    private func configure(wetaher: Forecast){
+        cityLabel.text = wetaher.location?.name
+        temperatureLabel.text = "\(String(describing: wetaher.current?.tempC))°C"
+    
+        if let iconURL = URL(string: "https:\(String(describing: wetaher.current?.condition?.icon))") {
+            URLSession.shared.dataTask(with: iconURL) { data, _, error in
+                if let data = data, let image = UIImage(data: data){
+                    DispatchQueue.main.async {
+                        self.conditionImageView.image = image
+                    }
+                }
+            }.resume()
+        }
+    }
 }
