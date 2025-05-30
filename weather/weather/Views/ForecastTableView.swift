@@ -17,6 +17,11 @@ final class ForecastTableView: UITableView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    var forecastData: [Forecastday] = [] {
+        didSet {
+            reloadData()
+        }
+    }
     
     private func setupUI() {
         register(ForecastCell.self, forCellReuseIdentifier: ForecastCell.id)
@@ -29,12 +34,12 @@ final class ForecastTableView: UITableView {
 
 extension ForecastTableView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return forecastData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ForecastCell.id, for: indexPath) as! ForecastCell
-        cell.mockConfigure(day: "day", temp: "15", icon: UIImage(systemName: "thermometer")!)
+        cell.configure(with: forecastData[indexPath.row])
         return cell
     }
 }

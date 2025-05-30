@@ -8,40 +8,42 @@
 import Foundation
 
 class WeatherViewModel {
-    private let session: URLSession
     private let apiKey = "fa8b3df74d4042b9aa7135114252304"
     
-    init() {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 15
-        config.timeoutIntervalForResource = 20
-        config.waitsForConnectivity = true
-        
-        self.session = URLSession(configuration: config)
-    }
-    
     func fetchWeather(lat: Double, lon: Double, completion: @escaping (Result<Forecast, Error>) -> Void) {
-        guard (-90...90).contains(lat), (-180...180).contains(lon) else {
-            DispatchQueue.main.async {
-                completion(.failure(APIError.invalidCoordinates))
-            }
-            return
-        }
-        
         let urlString = "https://api.weatherapi.com/v1/forecast.json?key=\(apiKey)&q=\(lat),\(lon)&days=7"
         
         guard let url = URL(string: urlString) else {
-            DispatchQueue.main.async {
-                completion(.failure(APIError.invalidURL))
-            }
+            completion(.failure(APIError.invalidURL))
             return
         }
         
-        print("Making request to:", url.absoluteString)
-
-                
+        print("Sending request to:", urlString)
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
             
+            guard let data = data else {
+                completion(.failure(APIError.noData))
+                return
+            }
             
-
-        }
+            // Вывод сырого ответа для отладки
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Raw API response:", jsonString)
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let response = try decoder.decode(Forecast.self, from: data)
+                completion(.success(response))
+            } catch let decodingError {
+                print("Full decoding error:", decodingError)
+                completion(.failure(APIError.decodingError(decodingError)))
+            }
+        }.resume()
+    }
 }

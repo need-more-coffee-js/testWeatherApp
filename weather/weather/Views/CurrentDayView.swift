@@ -17,16 +17,16 @@ final class CurrentDayView: UIView {
         return stackView
     }()
     
-    private let cityLabel: UILabel = {
+    private lazy var cityLabel: UILabel = {
         let label = UILabel()
-        label.text = "Moscow"
         label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.textColor = .black
         return label
     }()
     
     private let temperatureLabel: UILabel = {
         let label = UILabel()
-        label.text = "15°C"
+        label.text = ""
         label.font = .systemFont(ofSize: 36, weight: .bold)
         return label
     }()
@@ -66,18 +66,19 @@ final class CurrentDayView: UIView {
         }
     }
     
-    private func configure(wetaher: Forecast){
-        cityLabel.text = wetaher.location?.name
-        temperatureLabel.text = "\(String(describing: wetaher.current?.tempC))°C"
-    
-        if let iconURL = URL(string: "https:\(String(describing: wetaher.current?.condition?.icon))") {
-            URLSession.shared.dataTask(with: iconURL) { data, _, error in
-                if let data = data, let image = UIImage(data: data){
-                    DispatchQueue.main.async {
-                        self.conditionImageView.image = image
+    func configure(weather: Forecast) {
+            cityLabel.text = weather.location?.name ?? "Unknown"
+            temperatureLabel.text = "\(weather.current?.tempC ?? 0)°C"
+            
+            if let iconPath = weather.current?.condition?.icon,
+               let url = URL(string: "https:\(iconPath)") {
+                URLSession.shared.dataTask(with: url) { data, _, _ in
+                    if let data = data, let image = UIImage(data: data) {
+                        DispatchQueue.main.async {
+                            self.conditionImageView.image = image
+                        }
                     }
-                }
-            }.resume()
+                }.resume()
+            }
         }
-    }
 }

@@ -59,13 +59,23 @@ final class ForecastCell: UITableViewCell {
         }
     }
     
-    func configure(with viewModel: Forecast){
-        dayLabel.text = "viewModel.current"
-        tempLabel.text = "String(viewModel.forecastday[0].hour[0].tempC)"
+    func configure(with forecastDay: Forecastday) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEEE"
         
-        if let iconURL = URL(string: "https://cdn.weatherapi.com/weather/64x64/day/302.png") {
-            URLSession.shared.dataTask(with: iconURL) { data, _, error in
-                if let data = data , let image = UIImage(data: data) {
+        if let dateString = forecastDay.date,
+           let date = ISO8601DateFormatter().date(from: dateString) {
+            dayLabel.text = dateFormatter.string(from: date)
+        } else {
+            dayLabel.text = "N/A"
+        }
+        
+        tempLabel.text = "\(forecastDay.day?.avgtempC ?? 0)°C"
+        
+        if let iconPath = forecastDay.day?.condition?.icon,
+           let url = URL(string: "https:\(iconPath)") {
+            URLSession.shared.dataTask(with: url) { data, _, _ in
+                if let data = data, let image = UIImage(data: data) {
                     DispatchQueue.main.async {
                         self.tempImage.image = image
                     }

@@ -9,6 +9,13 @@ import UIKit
 import SnapKit
 
 final class HourlyView: UIView {
+    
+    var hourlyData: [Current] = [] {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -40,11 +47,12 @@ final class HourlyView: UIView {
 
 extension HourlyView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return hourlyData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyCollectionViewCell.id, for: indexPath) as! HourlyCollectionViewCell
+        cell.configure(with: hourlyData[indexPath.item])
         return cell
     }
 }

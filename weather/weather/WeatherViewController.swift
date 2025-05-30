@@ -55,6 +55,24 @@ class WeatherViewController: UIViewController {
             self?.loadWeatherData()
         }
     }
+    //MARK: - State
+    private func showLoadingState(){
+        loadingView.isHidden = false
+        errorView.isHidden = true
+        mainView.isHidden = true
+    }
+    
+    private func showErrorState(){
+        loadingView.isHidden = true
+        errorView.isHidden = false
+        mainView.isHidden = true
+    }
+    
+    private func showWeatherState(){
+        loadingView.isHidden = true
+        errorView.isHidden = true
+        mainView.isHidden = false
+    }
     
     private func loadWeatherData(){
         showLoadingState()
@@ -79,28 +97,21 @@ class WeatherViewController: UIViewController {
         }
     }
     
-    //MARK: - State
-    private func showLoadingState(){
-        loadingView.isHidden = false
-        errorView.isHidden = true
-        mainView.isHidden = true
-    }
-    
-    private func showErrorState(){
-        loadingView.isHidden = true
-        errorView.isHidden = false
-        mainView.isHidden = true
-    }
-    
-    private func showWeatherState(){
-        loadingView.isHidden = true
-        errorView.isHidden = true
-        mainView.isHidden = false
-    }
+
     
     //MARK: - Handlers
-    private func handleSuccess(weather: Forecast){
+    private func handleSuccess(weather: Forecast) {
         showWeatherState()
+        currentDay.configure(weather: weather)
+        
+        if let forecastDays = weather.forecast?.forecastday {
+            mainView.forecastTableView.forecastData = forecastDays
+            
+            // Получаем данные для первого дня
+            if let hours = forecastDays.first?.hour {
+                mainView.hourlyView.hourlyData = hours
+            }
+        }
     }
     
     private func handleError(error: Error){

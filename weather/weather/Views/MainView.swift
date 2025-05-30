@@ -15,8 +15,8 @@ final class MainView: UIView {
     
     // MARK: - Subviews
     private let currentWeather = CurrentDayView()
-    private let hourlyView = HourlyView()
-    private let forecastTableView = ForecastTableView()
+    let hourlyView = HourlyView()
+    let forecastTableView = ForecastTableView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
